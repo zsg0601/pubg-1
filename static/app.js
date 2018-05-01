@@ -26,19 +26,9 @@ vapp = new Vue({
     mapType: 'erangel',
     followMe: true,
     isDesert: false,
-    showBox: false,
+    showBox: true,
     showAirDrop: true,
     showCar: true,
-
-    showItemTop: true,
-    showItemDuoDuo: true,
-    showItemBasic: true,
-    showItemAR: false,
-    showItemSR: false,
-    showItemHealth: false,
-    showItemThrow: false,
-    showItemAmmo: false,
-    showItemAll: false,
 
     // --------------------------------------------------------------------------
 
@@ -243,7 +233,7 @@ function getMapSource (mapType) {
     ? 'erangel/v11'
     : 'miramar/v5'
   // if false, will use https://tiles2-v2.pubgmap.net/tiles/erangel/v11/{z}/{x}/{y}.png not sure if it is stable or not. But it will have more zoom, up to 5. Local only has up to 4
-  let useLocalResource = false
+  let useLocalResource = true
   const mapBase = useLocalResource
     ? '../maptiles'
     : 'https://tiles2-v2.pubgmap.net/tiles'
