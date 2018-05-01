@@ -43,13 +43,13 @@ vapp = new Vue({
     // --------------------------------------------------------------------------
 
     showBack: true,
-    showArmor2: false,
-    showHead2: false,
+    showArmor2: true,
+    showHead2: true,
     showArmor3: true,
     showHead3: true,
     showFirstAid: true,
     showMedKit: true,
-    showDrink: false,
+    showDrink: true,
     showGrenade: true,
     showSmokeBomb: false,
     showAmmo556: false,
@@ -65,7 +65,7 @@ vapp = new Vue({
     showSRSuppressor: true,
     showSRExtended: false,
     showSRStock: false,
-    showM16A4: true,
+    showM16A4: false,
     showSCAR: true,
     showAK47: false,
     showHK416: true,
@@ -243,7 +243,7 @@ function getMapSource (mapType) {
     ? 'erangel/v11'
     : 'miramar/v5'
   // if false, will use https://tiles2-v2.pubgmap.net/tiles/erangel/v11/{z}/{x}/{y}.png not sure if it is stable or not. But it will have more zoom, up to 5. Local only has up to 4
-  let useLocalResource = true
+  let useLocalResource = false
   const mapBase = useLocalResource
     ? '../maptiles'
     : 'https://tiles2-v2.pubgmap.net/tiles'
@@ -303,7 +303,7 @@ const carSvgImg = new Image()
 carSvgImg.src = 'data:image/svg+xml,' + escape(carSvg)
 
 const carRedSvg = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">' +
-'<path fill="#FF2020FF" id="svg_2" d="m9.86048,0.09798l-3.95767,0c-1.04907,0 -1.89924,1.16687 -1.89924,2.21595l0,11.71383c0,1.04874 0.85016,1.89958 1.89924,1.89958l3.95767,0c1.04874,0 1.89958,-0.8505 1.89958,-1.89958l0,-11.71383c-0.00067,-1.04907 -0.85084,-2.21595 -1.89958,-2.21595zm1.56671,4.77519l0,3.92604l-0.91849,0.11813l0,-1.61753l0.91849,-2.42664zm-0.48196,-1.14937c-0.34195,1.31261 -0.74684,2.86417 -0.74684,2.86417l-4.63383,0l-0.74785,-2.86417c0.00034,0 2.99005,-1.01575 6.12852,0zm-5.68022,3.68203l0,1.51185l-0.91882,-0.11746l0,-3.82137l0.91882,2.42697zm-0.91882,5.46078l0,-3.48648l0.91882,0.11544l0,2.75849l-0.91882,0.61255zm0.52403,0.99085l0.7465,-1.12278l4.63484,0l0.74684,1.12278l-6.12819,0zm5.63848,-1.70874l0,-2.64944l0.91849,-0.11948l0,3.38181l-0.91849,-0.61289z"/></svg>'
+'<path fill="#FFFF2020" id="svg_2" d="m9.86048,0.09798l-3.95767,0c-1.04907,0 -1.89924,1.16687 -1.89924,2.21595l0,11.71383c0,1.04874 0.85016,1.89958 1.89924,1.89958l3.95767,0c1.04874,0 1.89958,-0.8505 1.89958,-1.89958l0,-11.71383c-0.00067,-1.04907 -0.85084,-2.21595 -1.89958,-2.21595zm1.56671,4.77519l0,3.92604l-0.91849,0.11813l0,-1.61753l0.91849,-2.42664zm-0.48196,-1.14937c-0.34195,1.31261 -0.74684,2.86417 -0.74684,2.86417l-4.63383,0l-0.74785,-2.86417c0.00034,0 2.99005,-1.01575 6.12852,0zm-5.68022,3.68203l0,1.51185l-0.91882,-0.11746l0,-3.82137l0.91882,2.42697zm-0.91882,5.46078l0,-3.48648l0.91882,0.11544l0,2.75849l-0.91882,0.61255zm0.52403,0.99085l0.7465,-1.12278l4.63484,0l0.74684,1.12278l-6.12819,0zm5.63848,-1.70874l0,-2.64944l0.91849,-0.11948l0,3.38181l-0.91849,-0.61289z"/></svg>'
 const carRedSvgImg = new Image()
 carRedSvgImg.src = 'data:image/svg+xml,' + escape(carRedSvg)
 
@@ -353,9 +353,9 @@ const apawnStyleFunc = function (feature) {
       rotation: this.get('_rotation') || 0 // 0 - 6.28
     }),
     text: new ol.style.Text({
-      font: '8px Serif,Monospace',
+      font: '12px Calibri,sans-serif',
       textAlign: 'center',
-      fill: new ol.style.Fill({ color: 'rgba(139,126,102,0.9)' }),
+      fill: new ol.style.Fill({ color: 'rgba(255,255,255,0.9)' }),
       text: this.get('_label') || '' ,
       offsetY: 15
     })
@@ -382,7 +382,7 @@ const playerStyleFunc = function (feature) {
       rotation: this.get('_rotation') || 0, // 0 - 6.28,
     }),
     text: new ol.style.Text({
-      font: '12px Serif,Monospace',
+      font: '12px Calibri,sans-serif',
       textAlign: 'center',
       fill: new ol.style.Fill({ color: 'rgba(255,255,255,1)' }),
       text: this.get('_label') || '' ,
@@ -472,7 +472,7 @@ const poisonCircle = new ol.Feature({
   geometry: new ol.geom.Circle([-1, -1], 0)
 })
 poisonCircle.setId('poison')
-poisonCircle.set('_color', 'rgba(0,255,0,0.9)')
+poisonCircle.set('_color', 'rgba(255,255,255,0.9)')
 poisonCircle.setStyle(zoneStyleFunc)
 gridSource.addFeature(poisonCircle)
 
@@ -497,12 +497,12 @@ const itemStyleFunc = function (feature) {
       stroke: new ol.style.Stroke({color: 'rgba(0,0,255,0.8)', width: 1.5 })
     }),
     text: new ol.style.Text({
-      font: 'bold 14px Serif,Monospace',
+      font: 'bold 14px Calibri,sans-serif',
       textAlign: 'center',
       fill: new ol.style.Fill({ color: 'rgba(239,108,0,1)' }),
       text: this.get('_label') || '' ,
       offsetY: 12,
-      stroke: new ol.style.Stroke({color: 'rgba(0,0,205,1)', width: 2.5 })
+      stroke: new ol.style.Stroke({color: 'rgba(255,255,255,1)', width: 2.5 })
     })
   })
   return [style]
@@ -528,7 +528,7 @@ const meStyleFunc = function (feature) {
     image: new ol.style.Circle({
       radius: this.get('_radius'),
       fill: new ol.style.Fill({
-        color: 'rgba(255,255,0,1)'
+        color: 'rgba(255,255,255,1)'
       }),
       stroke : new ol.style.Stroke({
         width : this.get('_radius') - 1,
@@ -676,7 +676,21 @@ const renderMap = () => {
          [loc[0] + Math.cos(radianAngle) * 512, loc[1] - Math.sin(radianAngle) * 512]]
         )
       )
-    } 
+    } else { // enemy
+       if (playerObj.team) {
+       label = `${playerObj.team}`
+    } else if (playerObj.name) {
+        label = playerObj.name
+    } else {
+       label = `<${playerObj.guid}>`
+     }
+     if (playerObj.kills) {
+        label += `(${playerObj.kills})`
+     }
+    }
+    if (playerObj.health != null) {
+      label += `@:${Math.floor(playerObj.health)}`
+    }
     feature.set('_label', label)
     // re-add should be fine
     playerSource.addFeature(feature)
