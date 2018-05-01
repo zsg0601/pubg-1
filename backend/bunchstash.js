@@ -34,7 +34,7 @@ const bunchStash = {
   // return event[] or null
   feedEvent (inputEvent) {
     if (inputEvent.type !== CONSTS.EventTypes.UEBUNCHES) {
-      //logger.error('Must input UEBUNCHES event')
+      logger.error('Must input UEBUNCHES event')
       return
     }
     const allEvents = []
@@ -42,10 +42,10 @@ const bunchStash = {
       //console.log(`bunch ${i++} of ${inputEvent.data.length}  chIndex: ${bunch.chIndex}  pIndexes: ${bunch.pIndexes}`)
       if (bunch.chType === CONSTS.CHTYPE_CONTROL) {
         if (inputEvent.data.length > 1) {
-          //logger.fatal(inputEvent, 'I dont expect control bunch in multi bunch event')
+          logger.fatal(inputEvent, 'I dont expect control bunch in multi bunch event')
         }
         if (bunch.options.bClose === true) {
-          //logger.warn('got control close event')
+          logger.warn('got control close event')
           return [{ type: CONSTS.EventTypes.GAMESTOP, time: inputEvent.time }]
         }
         const messageType = bunch.uebuffer.readUInt8()
@@ -77,7 +77,6 @@ const bunchStash = {
     }
     if (allEvents.length > 0) {
       allEvents.forEach(e => e.time = inputEvent.time)
-	  //console.log(allEvents);
       return allEvents
     }
     return null
@@ -105,7 +104,7 @@ const bunchStash = {
       }
       this._bunchStashes[bunch.chIndex].push(bunch)
       if (this._bunchStashes[bunch.chIndex].length > CONSTS.RELIABLE_BUFFER) {
-        //logger.fatal({ count: this._bunchStashes[bunch.chIndex].length }, 'got too many bunches in stash')
+        logger.fatal({ count: this._bunchStashes[bunch.chIndex].length }, 'got too many bunches in stash')
       }
     } else { // not reliable, OR, chSeq is exactly good. Then go ahead and process
       const newEvts = this._receivedNextBunch(bunch)
@@ -131,7 +130,7 @@ const bunchStash = {
       }
     }
     if (events.length > 1) {
-      //logger.info({ chIndex: bunch.chIndex, count: events.length }, 'generated multiple events in bunch processing')
+      logger.info({ chIndex: bunch.chIndex, count: events.length }, 'generated multiple events in bunch processing')
     }
     return events.length > 0 ? events : null
   },
@@ -139,7 +138,7 @@ const bunchStash = {
   _receiveUEGUIDBunch (bunch) {
     const bHasRepLayoutExport = bunch.uebuffer.readBit()
     if (bHasRepLayoutExport) {
-      //logger.debug('Got true for bHasRepLayoutExport')
+      logger.debug('Got true for bHasRepLayoutExport')
     }
     UEGUIDCache.isExportingUEGUIDBunch = true
     const NumGUIDsInBunch = bunch.uebuffer.readUInt32()
@@ -166,8 +165,8 @@ const bunchStash = {
         const curInPartialBunch = this._inPartialBunches[bunch.chIndex]
         if (curInPartialBunch != null) {
           if (!curInPartialBunch.bPartialFinal && curInPartialBunch.bReliable) {
-            /*logger.error({ inPartialSeq: curInPartialBunch.chSeq, newSeq: bunch.chSeq, chIndex: bunch.chIndex },
-              'Unreliable partial trying to destroy reliable partial 1')*/
+            logger.error({ inPartialSeq: curInPartialBunch.chSeq, newSeq: bunch.chSeq, chIndex: bunch.chIndex },
+              'Unreliable partial trying to destroy reliable partial 1')
             return null
           }
         }
@@ -176,7 +175,7 @@ const bunchStash = {
         //   'Incoming new partial initial destoried old inPartial')
         if (!bunch.options.bHasPackageMapExports && !bunch.uebuffer.ended()) {
           if (bunch.uebuffer.remainingBits % 8 !== 0) {
-            //logger.fatal(bunch, 'Got bad bunch')
+            logger.fatal(bunch, 'Got bad bunch')
           }
         }
       } else { // incoming bunch is not partialInitial, so handle it with existing inPartialBunch
@@ -208,7 +207,7 @@ const bunchStash = {
           } else {
             // Merge problem - delete InPartialBunch. This is mainly so that in the unlikely chance that ChSequence wraps around, we wont merge two completely separate partial bunches.
             if (curInPartialBunch.options.bReliable) {
-              //logger.error({ cur: curInPartialBunch, newBunch: bunch }, 'Unreliable partial trying to destroy reliable partial 2')
+              logger.error({ cur: curInPartialBunch, newBunch: bunch }, 'Unreliable partial trying to destroy reliable partial 2')
               return null
             }
             this._inPartialBunches[bunch.chIndex] = undefined
@@ -218,7 +217,7 @@ const bunchStash = {
 
       const curInPartialBunch = this._inPartialBunches[bunch.chIndex]
       if (curInPartialBunch != null && curInPartialBunch.uebuffer.remainingBits > CONSTS.MAX_CONSTRUCTED_PARTIAL_SIZE_IN_BYTES) {
-        //logger.error(curInPartialBunch, 'in Partial bunch too large')
+        logger.error(curInPartialBunch, 'in Partial bunch too large')
         return null
       }
     } // end of bunch.options.bPartial === true
@@ -231,21 +230,21 @@ const bunchStash = {
    // return final event array, generated from bunch
   _receivedSequencedBunch (bunch) {
     if (bunch.options.bOpen) {
-      //logger.info({ chIndex: bunch.chIndex }, 'channel opened')
+      logger.info({ chIndex: bunch.chIndex }, 'channel opened')
     }
     let finalEvts = null
     try {
       finalEvts = this._parseActorBunch(bunch)
     } catch (e) {
       if (e.name === 'BufferNotEnoughError') {
-        //logger.info({ pIndexes: bunch.pIndexes, chIndex: bunch.chIndex }, '_parseActorBunch got BufferNotEnoughError')
+        logger.info({ pIndexes: bunch.pIndexes, chIndex: bunch.chIndex }, '_parseActorBunch got BufferNotEnoughError')
       } else {
         throw e
       }
     }
 
     if (bunch.options.bClose) {
-      //logger.info({ chIndex: bunch.chIndex }, 'channel closed')
+      logger.info({ chIndex: bunch.chIndex }, 'channel closed')
       this._closeChannel(bunch.chIndex)
     }
     return finalEvts
@@ -359,9 +358,9 @@ const bunchStash = {
       }
       if (numPayloadBits > bunch.uebuffer.remainingBits || numPayloadBits < 0) {
         // this can actually happen, we have to ignore this.
-        /*logger.error(
+        logger.error(
           { bunchChunk, numPayloadBits, remaining: bunch.uebuffer.remainingBits, bunchInfo: bunch.toString(), actor, finalEvts },
-          'got invalid numPayloadBits > remainingBits, or negative')*/
+          'got invalid numPayloadBits > remainingBits, or negative')
         break
       }
       if (bHasRepLayout && !bunch.isOutTraffic) {
@@ -377,7 +376,6 @@ const bunchStash = {
         }
       }
       if (bunch.isOutTraffic) {
-		  //console.log(repObj[0]);
         let outProcFunc = null
         if (repObj[0] === 'PLAYER') {
           outProcFunc = processCharMove
@@ -395,7 +393,7 @@ const bunchStash = {
             }
           } catch (e) {
             if (e.name === 'BufferNotEnoughError') {
-              //logger.info({ chunk: bunchChunk, actor }, 'Got not buffer enough error in CharMoveCmpProc')
+              logger.info({ chunk: bunchChunk, actor }, 'Got not buffer enough error in CharMoveCmpProc')
             } else {
               throw e
             }
@@ -428,9 +426,9 @@ const bunchStash = {
       if (archeTypeGuid > 0 && archeTypeObj == null) {
         const existing = UEGUIDCache.getSimple(archeTypeGuid)
         if (existing != null) {
-          //logger.debug({ path: existing[0], guid: archeTypeGuid}, 'Resolved Archetype GUID from cache.')
+          logger.debug({ path: existing[0], guid: archeTypeGuid}, 'Resolved Archetype GUID from cache.')
         } else {
-          //logger.debug({ guid: archeTypeGuid}, 'Unresolved Archetype GUID. Guid not registered!')
+          logger.debug({ guid: archeTypeGuid}, 'Unresolved Archetype GUID. Guid not registered!')
         }
       }
       const bHasLocationInfo = bunch.uebuffer.readBit()
@@ -454,7 +452,7 @@ const bunchStash = {
         }
         this._actors[bunch.chIndex] = actorObj
         UEGUIDCache.registerUEGUIDClient(ueguid, actorObj.archetype)
-        //logger.info(actorObj, 'Created a dynamic actor')
+        logger.info(actorObj, 'Created a dynamic actor')
       }
     } else {
       if (newActor == null) {
@@ -465,7 +463,7 @@ const bunchStash = {
         archetype: newActor[0] /*only care about pathName*/,
         chIndex: bunch.chIndex, isStatic: true, T: utils.getActorType(newActor[0]) }
       // got new static actor
-      //logger.debug(this._actors[bunch.chIndex], 'Created a static actor')
+      logger.debug(this._actors[bunch.chIndex], 'Created a static actor')
     }
   }
 }
