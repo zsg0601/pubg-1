@@ -1,7 +1,6 @@
 const CONSTS = require('../constants')
 
 function processPlayer (buf, actor, repObj, waitingHandle, dataOut, iteration) {
-	//console.log(waitingHandle);
   switch (waitingHandle) {
     case 1:
       if (buf.readBit()) {
@@ -24,18 +23,17 @@ function processPlayer (buf, actor, repObj, waitingHandle, dataOut, iteration) {
         dataOut.disappear = true
       }
       break
-    case 4:
+    case 13:
       buf.readInt(CONSTS.ROLE_MAX) // role
       break
     case 5:
       [ownerGuid, owner] = buf.readObject()
       dataOut.playerOwner = ownerGuid // seems never hit this
       break
-    case 6:
+    case 14:
       const movement = buf.readMovement(true /* isMoving */, true /* isPlayer */)
-	  //console.log(movement);
       if (movement[0] >= 0 && movement[1] >= 0) { // readVecotr sometime might get me negative value, might be a bug
-        //dataOut.newLoc = movement
+        dataOut.newLoc = movement
       }
       break
     case 7:
@@ -66,12 +64,7 @@ function processPlayer (buf, actor, repObj, waitingHandle, dataOut, iteration) {
       buf.readInt(CONSTS.ROLE_MAX) // role
       break
     case 14:
-      //buf.readBit()
-	  const ovement = buf.readMovement(true /* isMoving */, true /* isPlayer */)
-	  //console.log(ovement);
-	  if (ovement[0] >= 0 && ovement[1] >= 0) { // readVecotr sometime might get me negative value, might be a bug
-        dataOut.newLoc = ovement
-      }
+      buf.readBit()
       break
     case 15:
       buf.readObject()
@@ -118,7 +111,7 @@ function processPlayer (buf, actor, repObj, waitingHandle, dataOut, iteration) {
       buf.readByte()
       break
     case 29:
-      buf.readBit()	  
+      buf.readBit()
       break
     case 30:
       buf.readFloat()
